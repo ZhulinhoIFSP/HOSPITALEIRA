@@ -53,6 +53,19 @@ export const excluirConsulta = (id: number) =>
   requisicao<{ success: boolean; message: string }>(`/consultas/${id}`, {
     method: 'DELETE',
   });
+export const executarAcaoConsulta = (
+  id: number,
+  dados: {
+    acao: string;
+    actorId: number;
+    actorRole: string;
+    payload?: Record<string, unknown>;
+  },
+) =>
+  requisicao<Consulta>(`/consultas/${id}/acoes`, {
+    method: 'POST',
+    body: JSON.stringify(dados),
+  });
 export const sincronizarConsultas = (consultas: Consulta[]) =>
   requisicao<Consulta[]>('/consultas/sincronizar', {
     method: 'PUT',

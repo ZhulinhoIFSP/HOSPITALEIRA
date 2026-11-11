@@ -47,6 +47,9 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'REALIZADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      'Paciente compareceu para revisão anual.',
+      'Hipertensão estágio 1 controlada.',
+      'Losartana 50mg 1x ao dia.',
     ),
     new Consulta(
       5,
@@ -57,6 +60,10 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'CANCELADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      'Paciente solicitou cancelamento por motivo de viagem.',
     ),
     new Consulta(
       6,
@@ -86,6 +93,11 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
           consulta.status,
           consulta.createdAt,
           consulta.updatedAt,
+          consulta.prontuario,
+          consulta.diagnostico,
+          consulta.prescricao,
+          consulta.motivoCancelamento,
+          consulta.version ?? 1,
         )
       : null;
   }
@@ -127,6 +139,11 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.status ?? 'AGENDADA',
       agora,
       agora,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
     );
     this.consultas.push(nova);
     return nova;
@@ -146,6 +163,11 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.status ?? atual.status,
       atual.createdAt,
       dados.updatedAt ?? new Date().toISOString(),
+      dados.prontuario !== undefined ? dados.prontuario : atual.prontuario,
+      dados.diagnostico !== undefined ? dados.diagnostico : atual.diagnostico,
+      dados.prescricao !== undefined ? dados.prescricao : atual.prescricao,
+      dados.motivoCancelamento !== undefined ? dados.motivoCancelamento : atual.motivoCancelamento,
+      dados.version !== undefined ? dados.version : (atual.version ?? 1),
     );
 
     this.consultas[index] = atualizada;
@@ -171,6 +193,11 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
           c.status,
           c.createdAt,
           c.updatedAt,
+          c.prontuario,
+          c.diagnostico,
+          c.prescricao,
+          c.motivoCancelamento,
+          c.version ?? 1,
         ),
     );
     return [...this.consultas];

@@ -30,6 +30,20 @@ export class UpdateConsultaUseCase {
       throw new NotFoundError(`Consulta #${id} não encontrada.`);
     }
 
+    // Proibição expressa de alteração arbitrária de status via formulário direto
+    if (input.status !== undefined && input.status !== consulta.status) {
+      throw new BusinessRuleError(
+        'Alteração arbitrária de status via formulário direto é estritamente proibida. O ciclo de vida da consulta é gerenciado exclusivamente pela Máquina de Estados Finita através de ações explícitas (confirmar, check-in, iniciar-atendimento, concluir, cancelar).',
+      );
+    }
+
+    // Consultas finalizadas ou canceladas não podem sofrer alteração cadastral de dados
+    if (consulta.isEstadoFinal()) {
+      throw new BusinessRuleError(
+        `Não é possível alterar os dados de uma consulta com status '${consulta.status}'.`,
+      );
+    }
+
     const pacienteId = input.pacienteId ?? consulta.pacienteId;
     const medicoId = input.medicoId ?? consulta.medicoId;
     const data = input.data ?? consulta.data;
@@ -49,14 +63,6 @@ export class UpdateConsultaUseCase {
       }
     }
 
-    if (input.status && input.status !== consulta.status) {
-      if (!consulta.podeTransicionarPara(input.status)) {
-        throw new BusinessRuleError(
-          `Transição inválida: status atual ${consulta.status} não pode ir para ${input.status}.`,
-        );
-      }
-    }
-
     const conflito = await this.consultaRepository.findByMedicoEHorario(
       medicoId,
       data,
@@ -72,7 +78,6 @@ export class UpdateConsultaUseCase {
       medicoId,
       data,
       horario,
-      ...(input.status ? { status: input.status } : {}),
       updatedAt: new Date().toISOString(),
     });
 

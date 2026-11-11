@@ -11,7 +11,8 @@ import { StatusConsulta } from '@/types/consulta';
 const proximaAcao: Partial<Record<StatusConsulta, { texto: string; status: StatusConsulta }>> = {
   AGENDADA: { texto: 'Confirmar pelo paciente', status: 'CONFIRMADA' },
   CONFIRMADA: { texto: 'Fazer check-in', status: 'CHECK_IN' },
-  CHECK_IN: { texto: 'Marcar como realizada', status: 'REALIZADA' },
+  CHECK_IN: { texto: 'Iniciar atendimento médico', status: 'EM_ATENDIMENTO' },
+  EM_ATENDIMENTO: { texto: 'Marcar como realizada (Médico)', status: 'REALIZADA' },
 };
 
 export default function DetalheConsulta() {
