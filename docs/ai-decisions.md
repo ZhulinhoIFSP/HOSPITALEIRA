@@ -137,6 +137,92 @@ Testes unitários isolados das guardas confirmando SRP, OCP e LSP.
 **3. Considerações do Estudante:**
 > Durante o desenvolvimento do trabalho de POO utilizei de diversos if criando exceções e estruturando exceções para impedir que o estado de MATRICULA (estado), fosse alterada de CANCELADA para TRANCADA então utilizei essas restrições na prática impedindo que minhas regras de negócio fossem violadas.
 
+### No meu sistema hospitalar, como trato requisições concorrentes que tentam agendar o mesmo médico ou sala no mesmo horário simultaneamente, evitando duplo agendamento
+
+Implementamos um serviço de Mutex Assíncrono por chave de recurso (AsyncLockService). Ao agendar uma consulta no CreateConsultaUseCase, o sistema adquire uma trava exclusiva para a chave medico:${medicoId}:${data}:${horario}:
+
+return await this.asyncLockService.withLock(lockKey, async () => {
+  const conflito = await this.consultaRepository.findByMedicoEHorario(medicoId, data, horario);
+  if (conflito) throw new ConflictError('O médico já possui uma consulta agendada para esse horário.');
+  return await this.consultaRepository.create(...);
+});
+
+Se duas requisições chegarem no mesmo milissegundo, a primeira executa a criação e a segunda, ao obter o lock, detecta que o horário acabou de ser preenchido e é rejeitada com ConflictError.
+
+### Como evitar que dois usuários (ex: recepcionista e paciente) editem ou alterem a mesma consulta ao mesmo tempo e um sobrescreva as alterações do outro sem perceber?
+
+No caso de uso de edição cadastral (UpdateConsultaUseCase), removemos a permissão de alterar o status diretamente. Se a requisição contiver qualquer valor no campo status, o sistema lança expressamente um erro de domínio:
+
+if (input.status !== undefined && input.status !== consulta.status) {
+  throw new BusinessRuleError(
+    'Alteração arbitrária de status via formulário direto é estritamente proibida. O ciclo de vida da consulta é gerenciado exclusivamente pela Máquina de Estados Finita através de ações explícitas.'
+  );
+}
+
+O formulário comum agora serve estritamente para alterar dados cadastrais (médico, paciente, data e horário).
+
+### Como implementar regras de SLA e temporalidade para expirar automaticamente consultas que estão 'AGENDADA' há muito tempo sem que o paciente confirme presença?
+
+Criamos a interface ISlaPolicy e a política ConfirmacaoSlaPolicy. Toda consulta agendada recebe um atributo limiteConfirmacaoAt (ex: 24 horas antes do horário). Ao rodar a avaliação de SLA, se o horário atual ultrapassar o limite, a consulta tem seu status alterado automaticamente para CANCELADA com motivo "Cancelamento automático: prazo de confirmação expirado (SLA)", liberando a vaga para outro paciente.
+
+### Como criar um gatilho de escalonamento para pacientes que fizeram check-in na recepção e estão esperando há mais de 30 minutos na sala de espera sem serem atendidos?
+
+Implementamos a TempoEsperaCheckInSlaPolicy. Quando o paciente faz check-in, registramos o timestamp dataCheckIn. A política calcula a diferença entre o horário atual e o check-in:
+
+if (minutosDecorridos >= 30) {
+  return {
+  violou: true,
+  acao: 'ESCALONAR',
+  descricao: `Paciente aguardando há ${minutosDecorridos} minutos na recepção.`
+  };
+}
+
+O gatilho atualiza a consulta marcando slaEstourado = true, define prioridade = 'URGENTE' e gera um alerta para a equipe médica e coordenação de enfermagem.
+
+
+
+### O que deve acontecer se uma consulta for cancelada no meio do fluxo, Como fazer o rollback parcial dos recursos reservados?
+
+Criamos o **RollbackManagerService** e handlers dedicados que executam ações compensatórias:
+
+LiberarAgendaRollbackHandler: Libera o slot da agenda do médico, permitindo novo agendamento no mesmo horário;
+
+LiberarSalaRollbackHandler: Desaloca o consultório físico (salaId) e o devolve ao pool de salas disponíveis;
+
+RemoverFilaEsperaRollbackHandler: Se a consulta estava em CHECK_IN, retira o paciente da fila de presença ativa da recepção;
+
+Todas as compensações executadas são salvas no array compensacoesExecutadas da consulta para fins de rastreabilidade.
+
+
+### Como os princípios SOLID foram aplicados nessa camada de Concorrência, SLA e Rollback?
+
+Single Responsibility Principle (SRP): Cada política (ConfirmacaoSlaPolicy, TempoEsperaCheckInSlaPolicy) e cada handler de compensação (LiberarAgendaRollbackHandler, LiberarSalaRollbackHandler) possui uma única e exclusiva responsabilidade.
+
+Open/Closed Principle (OCP): Tanto o SlaManagerService quanto o RollbackManagerService possuem métodos de registro (registrarPolitica, registrarHandler). Para adicionar uma nova regra (ex: estorno de pagamento de coparticipação), criamos uma nova classe sem modificar o código existente.
+
+Liskov Substitution Principle (LSP): O motor consome as interfaces ISlaPolicy e IRollbackHandler, aceitando qualquer implementação sem quebras de comportamento.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### Interação 3: Regras de Negócio na Prática
 
 **1. O Prompt Utilizado:**
