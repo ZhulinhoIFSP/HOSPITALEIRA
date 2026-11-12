@@ -39,13 +39,10 @@ export class ExecutarAcaoConsultaDto {
   @ValidateNested()
   @Type(() => TransitionPayloadDto)
   payload?: TransitionPayloadDto;
-<<<<<<< HEAD
 
   @IsOptional()
   @IsInt({ message: 'A versão deve ser um número inteiro.' })
   version?: number;
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 }
 
 export class BaseAcaoDto {
@@ -56,13 +53,10 @@ export class BaseAcaoDto {
     message: `Perfil (actorRole) inválido. Perfis aceitos: ${USER_ROLES.join(', ')}.`,
   })
   actorRole!: UserRole;
-<<<<<<< HEAD
 
   @IsOptional()
   @IsInt({ message: 'A versão deve ser um número inteiro.' })
   version?: number;
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 }
 
 export class ConcluirAcaoDto extends BaseAcaoDto {

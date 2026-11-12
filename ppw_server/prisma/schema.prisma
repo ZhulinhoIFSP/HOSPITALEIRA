@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PrioridadeConsulta {
+  NORMAL
+  ALTA
+  URGENTE
+}
+
+enum StatusConsulta {
+  AGENDADA
+  CONFIRMADA
+  CHECK_IN
+  EM_ATENDIMENTO
+  REALIZADA
+  CANCELADA
+}
+
+model Paciente {
+  id        Int        @id @default(autoincrement())
+  nome      String
+  email     String?
+  telefone  String?
+  cpf       String?
+  consultas Consulta[]
+
+  @@map("pacientes")
+}
+
+model Medico {
+  id            Int        @id @default(autoincrement())
+  nome          String
+  especialidade String
+  crm           String?
+  telefone      String?
+  consultas     Consulta[]
+
+  @@map("medicos")
+}
+
+model Consulta {
+  id                     Int                 @id @default(autoincrement())
+  pacienteId             Int                 @map("paciente_id")
+  medicoId               Int                 @map("medico_id")
+  data                   String
+  horario                String
+  status                 StatusConsulta      @default(AGENDADA)
+  createdAt              DateTime            @default(now()) @map("created_at")
+  updatedAt              DateTime            @updatedAt @map("updated_at")
+  prontuario             String?
+  diagnostico            String?
+  prescricao             String?
+  motivoCancelamento     String?             @map("motivo_cancelamento")
+  version                Int                 @default(1)
+  salaId                 Int?                @map("sala_id")
+  dataCheckIn            DateTime?           @map("data_check_in")
+  limiteConfirmacaoAt    DateTime?           @map("limite_confirmacao_at")
+  slaEstourado           Boolean             @default(false) @map("sla_estourado")
+  alertaEscalonamento    String?             @map("alerta_escalonamento")
+  prioridade             PrioridadeConsulta  @default(NORMAL)
+  compensacoesExecutadas String[]            @default([]) @map("compensacoes_executadas")
+
+  paciente               Paciente            @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  medico                 Medico              @relation(fields: [medicoId], references: [id], onDelete: Cascade)
+  historicos             HistoricoConsulta[]
+
+  @@map("consultas")
+}
+
+model HistoricoConsulta {
+  id             Int      @id @default(autoincrement())
+  consultaId     Int      @map("consulta_id")
+  estadoAnterior String   @map("estado_anterior")
+  novoEstado     String   @map("novo_estado")
+  autorId        Int      @map("autor_id")
+  autorRole      String   @map("autor_role")
+  justificativa  String
+  timestamp      DateTime @default(now())
+  versao         Int      @default(1)
+  detalhes       Json?
+
+  consulta       Consulta @relation(fields: [consultaId], references: [id], onDelete: Cascade)
+
+  @@map("historicos_consultas")
+}

@@ -1,34 +1,24 @@
 import { Inject, Injectable } from '@nestjs/common';
-<<<<<<< HEAD
 import { ConflictError, NotFoundError } from '../../../core/errors/domain.error';
-=======
-import { NotFoundError } from '../../../core/errors/domain.error';
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 import { Consulta } from '../../../domain/entities/consulta.entity';
 import { ConsultaAcao } from '../../../domain/enums/consulta-acao.enum';
 import { UserRole } from '../../../domain/enums/user-role.enum';
 import { ConsultaStateMachine } from '../../../domain/fsm/consulta-state-machine';
 import { TransitionContext, TransitionPayload } from '../../../domain/fsm/transition-context';
 import { CONSULTA_REPOSITORY, IConsultaRepository } from '../../../domain/repositories/consulta.repository.interface';
-<<<<<<< HEAD
 import {
   HISTORICO_CONSULTA_REPOSITORY,
   IHistoricoConsultaRepository,
 } from '../../../domain/repositories/historico-consulta.repository.interface';
 import { RollbackManagerService } from '../../../domain/rollback/rollback-manager.service';
 import { ITransactionManager, TRANSACTION_MANAGER } from '../../../domain/transaction/transaction-manager.interface';
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 
 export interface ExecutarAcaoConsultaInput {
   acao: ConsultaAcao;
   actorId: number;
   actorRole: UserRole;
   payload?: TransitionPayload;
-<<<<<<< HEAD
   version?: number;
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 }
 
 @Injectable()
@@ -36,14 +26,11 @@ export class ExecutarAcaoConsultaUseCase {
   constructor(
     @Inject(CONSULTA_REPOSITORY)
     private readonly consultaRepository: IConsultaRepository,
-<<<<<<< HEAD
     @Inject(HISTORICO_CONSULTA_REPOSITORY)
     private readonly historicoRepository: IHistoricoConsultaRepository,
     @Inject(TRANSACTION_MANAGER)
     private readonly transactionManager: ITransactionManager,
     private readonly rollbackManagerService: RollbackManagerService,
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   ) {}
 
   async execute(id: number, input: ExecutarAcaoConsultaInput): Promise<Consulta> {
@@ -52,7 +39,6 @@ export class ExecutarAcaoConsultaUseCase {
       throw new NotFoundError(`Consulta #${id} não encontrada.`);
     }
 
-<<<<<<< HEAD
     // CONTROLE DE CONCORRÊNCIA OTIMISTA (OCC)
     if (input.version !== undefined && input.version !== consulta.version) {
       throw new ConflictError(
@@ -60,8 +46,6 @@ export class ExecutarAcaoConsultaUseCase {
       );
     }
 
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     const context: TransitionContext = {
       consulta,
       actorId: input.actorId,
@@ -72,7 +56,6 @@ export class ExecutarAcaoConsultaUseCase {
     // Executa a transição orientada a evento na Máquina de Estados Finita (com RBAC e Transition Guards)
     const { dadosAtualizacao } = await ConsultaStateMachine.transicionar(input.acao, context);
 
-<<<<<<< HEAD
     // Registro temporal de check-in para cálculo de SLA
     if (input.acao === 'CHECK_IN') {
       dadosAtualizacao.dataCheckIn = new Date().toISOString();
@@ -122,13 +105,5 @@ export class ExecutarAcaoConsultaUseCase {
 
       return atualizada;
     });
-=======
-    const atualizada = await this.consultaRepository.update(id, dadosAtualizacao);
-    if (!atualizada) {
-      throw new NotFoundError(`Consulta #${id} não encontrada.`);
-    }
-
-    return atualizada;
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   }
 }

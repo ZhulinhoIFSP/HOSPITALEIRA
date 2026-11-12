@@ -27,10 +27,7 @@ import { ConsultasController } from '../presentation/controllers/consultas.contr
     DeleteConsultaUseCase,
     SyncConsultasUseCase,
     ExecutarAcaoConsultaUseCase,
-<<<<<<< HEAD
     ProcessarSlaConsultasUseCase,
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   ],
   exports: [
     AsyncLockService,
@@ -44,10 +41,7 @@ import { ConsultasController } from '../presentation/controllers/consultas.contr
     DeleteConsultaUseCase,
     SyncConsultasUseCase,
     ExecutarAcaoConsultaUseCase,
-<<<<<<< HEAD
     ProcessarSlaConsultasUseCase,
-=======
->>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   ],
 })
 export class ConsultasModule {}

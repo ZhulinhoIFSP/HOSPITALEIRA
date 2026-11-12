@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-  ### Em quase todo CRUD que vejo na internet, as pessoas colocam um <select> com os status no formulário e salvam direto no banco via PUT ou PATCH. Por que em sistemas reais e críticos isso é considerado um erro grave de arquitetura?
+ ### Em quase todo CRUD que vejo na internet, as pessoas colocam um <select> com os status no formulário e salvam direto no banco via PUT ou PATCH. Por que em sistemas reais e críticos isso é considerado um erro grave de arquitetura?
 
   Resposta da IA: Em sistemas comuns de cadastro simples isso até funciona, mas em sistemas críticos (como hospitais, bancos ou e-commerces) deixar o campo status aberto no formulário permite alterações arbitrárias e fraude de fluxo. Um usuário mal-intencionado ou um erro de digitação na tela poderia mudar uma consulta diretamente de AGENDADA para REALIZADA, pulando a recepção, o pagamento ou a própria consulta médica. O status não é um simples dado cadastral; ele representa o estado do ciclo de vida de um processo de negócio.
 
@@ -526,6 +525,8 @@ Testes unitários isolados das guardas confirmando SRP, OCP e LSP.
 
 
 # ###########################################################################################################################
+# ###########################################################################################################################
+
 
 
 
@@ -625,27 +626,6 @@ Single Responsibility Principle (SRP): Cada política (ConfirmacaoSlaPolicy, Tem
 Open/Closed Principle (OCP): Tanto o SlaManagerService quanto o RollbackManagerService possuem métodos de registro (registrarPolitica, registrarHandler). Para adicionar uma nova regra (ex: estorno de pagamento de coparticipação), criamos uma nova classe sem modificar o código existente.
 
 Liskov Substitution Principle (LSP): O motor consome as interfaces ISlaPolicy e IRollbackHandler, aceitando qualquer implementação sem quebras de comportamento.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### Interação 3: Regras de Negócio na Prática
 
