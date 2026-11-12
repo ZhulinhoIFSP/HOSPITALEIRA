@@ -41,8 +41,11 @@ export class ConsultasController {
     private readonly deleteConsultaUseCase: DeleteConsultaUseCase,
     private readonly syncConsultasUseCase: SyncConsultasUseCase,
     private readonly executarAcaoConsultaUseCase: ExecutarAcaoConsultaUseCase,
+<<<<<<< HEAD
     private readonly processarSlaConsultasUseCase: ProcessarSlaConsultasUseCase,
     private readonly getHistoricoConsultaUseCase: GetHistoricoConsultaUseCase,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   ) {}
 
   @Get('auditoria/geral')
@@ -60,11 +63,14 @@ export class ConsultasController {
     return this.getConsultaByIdUseCase.execute(id);
   }
 
+<<<<<<< HEAD
   @Get(':id/historico')
   async findHistorico(@Param('id', ParseIntPipe) id: number) {
     return this.getHistoricoConsultaUseCase.execute(id);
   }
 
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   @Get(':id/acoes-disponiveis')
   async findAcoesDisponiveis(
     @Param('id', ParseIntPipe) id: number,
@@ -113,6 +119,7 @@ export class ConsultasController {
   }
 
   // ==========================================
+<<<<<<< HEAD
   // SLA E TEMPORALIDADE (Item 1.B)
   // Gatilhos de expiração e escalonamento
   // ==========================================
@@ -125,6 +132,10 @@ export class ConsultasController {
   // ==========================================
   // ROTAS DA MÁQUINA DE ESTADOS FINITA (FSM)
   // Com Locks, OCC e Rollback Compensatório (Item 1.B)
+=======
+  // ROTAS DA MÁQUINA DE ESTADOS FINITA (FSM)
+  // Transições orientadas a eventos/ações específicas
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   // ==========================================
 
   @Post(':id/acoes')
@@ -137,7 +148,10 @@ export class ConsultasController {
       actorId: dto.actorId,
       actorRole: dto.actorRole,
       payload: dto.payload,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     });
   }
 
@@ -150,7 +164,10 @@ export class ConsultasController {
       acao: 'CONFIRMAR',
       actorId: dto.actorId,
       actorRole: dto.actorRole,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     });
   }
 
@@ -163,7 +180,10 @@ export class ConsultasController {
       acao: 'CHECK_IN',
       actorId: dto.actorId,
       actorRole: dto.actorRole,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     });
   }
 
@@ -176,7 +196,10 @@ export class ConsultasController {
       acao: 'INICIAR_ATENDIMENTO',
       actorId: dto.actorId,
       actorRole: dto.actorRole,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     });
   }
 
@@ -189,7 +212,10 @@ export class ConsultasController {
       acao: 'CONCLUIR',
       actorId: dto.actorId,
       actorRole: dto.actorRole,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       payload: {
         prontuario: dto.prontuario,
         diagnostico: dto.diagnostico,
@@ -207,7 +233,10 @@ export class ConsultasController {
       acao: 'CANCELAR',
       actorId: dto.actorId,
       actorRole: dto.actorRole,
+<<<<<<< HEAD
       version: dto.version,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       payload: {
         justificativa: dto.justificativa,
       },

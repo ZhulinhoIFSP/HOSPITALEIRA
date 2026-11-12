@@ -33,6 +33,7 @@ export class UpdateConsultaUseCase {
       throw new NotFoundError(`Consulta #${id} não encontrada.`);
     }
 
+<<<<<<< HEAD
     // CONTROLE DE CONCORRÊNCIA OTIMISTA (OCC)
     // Se o cliente informar a versão que está editando e houver divergência, bloqueia sobrescrita cega
     if (input.version !== undefined && input.version !== consulta.version) {
@@ -41,6 +42,8 @@ export class UpdateConsultaUseCase {
       );
     }
 
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     // Proibição expressa de alteração arbitrária de status via formulário direto
     if (input.status !== undefined && input.status !== consulta.status) {
       throw new BusinessRuleError(
@@ -74,6 +77,7 @@ export class UpdateConsultaUseCase {
       }
     }
 
+<<<<<<< HEAD
     // Lock na chave de médico e horário do reagendamento para evitar colisão concorrente
     const lockKey = `medico:${medicoId}:${data}:${horario}`;
 
@@ -101,6 +105,24 @@ export class UpdateConsultaUseCase {
       }
 
       return atualizada;
+=======
+    const conflito = await this.consultaRepository.findByMedicoEHorario(
+      medicoId,
+      data,
+      horario,
+      id,
+    );
+    if (conflito) {
+      throw new ConflictError('O médico já possui uma consulta agendada para esse horário.');
+    }
+
+    const atualizada = await this.consultaRepository.update(id, {
+      pacienteId,
+      medicoId,
+      data,
+      horario,
+      updatedAt: new Date().toISOString(),
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     });
   }
 }

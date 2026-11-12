@@ -13,14 +13,19 @@ import { CreateConsultaUseCase } from './application/use-cases/consultas/create-
 import { UpdateConsultaUseCase } from './application/use-cases/consultas/update-consulta.use-case';
 import { DeleteConsultaUseCase } from './application/use-cases/consultas/delete-consulta.use-case';
 import { ExecutarAcaoConsultaUseCase } from './application/use-cases/consultas/executar-acao-consulta.use-case';
+<<<<<<< HEAD
 import { ProcessarSlaConsultasUseCase } from './application/use-cases/consultas/processar-sla-consultas.use-case';
 import { GetHistoricoConsultaUseCase } from './application/use-cases/consultas/get-historico-consulta.use-case';
 import { BusinessRuleError, ConflictError, ForbiddenError } from './core/errors/domain.error';
 import { AsyncLockService } from './domain/concurrency/async-lock.service';
+=======
+import { BusinessRuleError, ForbiddenError } from './core/errors/domain.error';
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 import { ConsultaStateMachine } from './domain/fsm/consulta-state-machine';
 import { RbacGuard } from './domain/fsm/guards/rbac.guard';
 import { ProntuarioObrigatorioGuard } from './domain/fsm/guards/prontuario-obrigatorio.guard';
 import { JustificativaCancelamentoGuard } from './domain/fsm/guards/justificativa-cancelamento.guard';
+<<<<<<< HEAD
 import { ConfirmacaoSlaPolicy } from './domain/sla/policies/confirmacao-sla.policy';
 import { TempoEsperaCheckInSlaPolicy } from './domain/sla/policies/tempo-espera-sla.policy';
 import { SlaManagerService } from './domain/sla/sla-manager.service';
@@ -43,6 +48,11 @@ import {
 } from './domain/repositories/consulta.repository.interface';
 
 describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hospital - 1.A, 1.B & 1.C)', () => {
+=======
+import { Consulta } from './domain/entities/consulta.entity';
+
+describe('Clean Architecture & FSM (Hospital - Item 1.A)', () => {
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   let listPacientes: ListPacientesUseCase;
   let createPaciente: CreatePacienteUseCase;
   let updatePaciente: UpdatePacienteUseCase;
@@ -58,6 +68,7 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
   let updateConsulta: UpdateConsultaUseCase;
   let deleteConsulta: DeleteConsultaUseCase;
   let executarAcaoConsulta: ExecutarAcaoConsultaUseCase;
+<<<<<<< HEAD
   let processarSlaConsultas: ProcessarSlaConsultasUseCase;
   let getHistoricoConsulta: GetHistoricoConsultaUseCase;
 
@@ -67,6 +78,8 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
   let historicoRepository: IHistoricoConsultaRepository;
   let transactionManager: ITransactionManager;
   let consultaRepository: IConsultaRepository;
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -88,6 +101,7 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
     updateConsulta = module.get(UpdateConsultaUseCase);
     deleteConsulta = module.get(DeleteConsultaUseCase);
     executarAcaoConsulta = module.get(ExecutarAcaoConsultaUseCase);
+<<<<<<< HEAD
     processarSlaConsultas = module.get(ProcessarSlaConsultasUseCase);
     getHistoricoConsulta = module.get(GetHistoricoConsultaUseCase);
 
@@ -97,6 +111,8 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
     historicoRepository = module.get(HISTORICO_CONSULTA_REPOSITORY);
     transactionManager = module.get(TRANSACTION_MANAGER);
     consultaRepository = module.get(CONSULTA_REPOSITORY);
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   });
 
   describe('Pacientes CRUD', () => {
@@ -205,6 +221,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
 
   describe('1.A - Máquina de Estados Finita e Transições Restritas', () => {
     it('deve realizar o fluxo de transição completo por ações explícitas (confirmar -> check-in -> iniciar atendimento -> concluir)', async () => {
+<<<<<<< HEAD
+=======
+      // 1. Cria uma nova consulta (status inicial: AGENDADA)
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       const nova = await createConsulta.execute({
         pacienteId: 2,
         medicoId: 2,
@@ -213,6 +233,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
       });
       expect(nova.status).toBe('AGENDADA');
 
+<<<<<<< HEAD
+=======
+      // 2. Ação confirmar() pelo PACIENTE
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       const confirmada = await executarAcaoConsulta.execute(nova.id, {
         acao: 'CONFIRMAR',
         actorId: 2,
@@ -220,14 +244,23 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
       });
       expect(confirmada.status).toBe('CONFIRMADA');
 
+<<<<<<< HEAD
+=======
+      // 3. Ação checkIn() pela RECEPCIONISTA
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       const emCheckIn = await executarAcaoConsulta.execute(nova.id, {
         acao: 'CHECK_IN',
         actorId: 99,
         actorRole: 'RECEPCIONISTA',
       });
       expect(emCheckIn.status).toBe('CHECK_IN');
+<<<<<<< HEAD
       expect(emCheckIn.dataCheckIn).toBeDefined();
 
+=======
+
+      // 4. Ação iniciarAtendimento() pelo MÉDICO
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       const emAtendimento = await executarAcaoConsulta.execute(nova.id, {
         acao: 'INICIAR_ATENDIMENTO',
         actorId: 2,
@@ -235,6 +268,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
       });
       expect(emAtendimento.status).toBe('EM_ATENDIMENTO');
 
+<<<<<<< HEAD
+=======
+      // 5. Ação concluir() pelo MÉDICO com laudo/prontuário e diagnóstico
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       const realizada = await executarAcaoConsulta.execute(nova.id, {
         acao: 'CONCLUIR',
         actorId: 2,
@@ -283,6 +320,11 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
       });
 
       it('deve impedir que RECEPCIONISTA conclua a consulta médica', async () => {
+<<<<<<< HEAD
+=======
+        // Consulta #3 está em CHECK_IN
+        // Primeiro inicia atendimento com médico
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
         const emAtendimento = await executarAcaoConsulta.execute(3, {
           acao: 'INICIAR_ATENDIMENTO',
           actorId: 3,
@@ -290,6 +332,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
         });
         expect(emAtendimento.status).toBe('EM_ATENDIMENTO');
 
+<<<<<<< HEAD
+=======
+        // Recepcionista tenta concluir
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
         await expect(
           executarAcaoConsulta.execute(3, {
             acao: 'CONCLUIR',
@@ -316,6 +362,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
 
     describe('Guardas de Transição (Transition Guards)', () => {
       it('GUARDA DE LAUDO/PRONTUÁRIO: deve impedir conclusão se laudo/prontuário não estiver preenchido', async () => {
+<<<<<<< HEAD
+=======
+        // Cria consulta e avança até EM_ATENDIMENTO
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
         const c = await createConsulta.execute({
           pacienteId: 1,
           medicoId: 1,
@@ -338,6 +388,10 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
           actorRole: 'MEDICO',
         });
 
+<<<<<<< HEAD
+=======
+        // Tentativa de concluir SEM prontuário
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
         await expect(
           executarAcaoConsulta.execute(c.id, {
             acao: 'CONCLUIR',
@@ -351,6 +405,24 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
         ).rejects.toThrow(
           'Guarda de Transição violada: É obrigatório o preenchimento detalhado do laudo/prontuário médico',
         );
+<<<<<<< HEAD
+=======
+
+        // Tentativa de concluir SEM diagnóstico
+        await expect(
+          executarAcaoConsulta.execute(c.id, {
+            acao: 'CONCLUIR',
+            actorId: 1,
+            actorRole: 'MEDICO',
+            payload: {
+              prontuario: 'Exame clínico geral realizado.',
+              diagnostico: '',
+            },
+          }),
+        ).rejects.toThrow(
+          'Guarda de Transição violada: É obrigatório informar o diagnóstico clínico',
+        );
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
       });
 
       it('GUARDA DE JUSTIFICATIVA: deve impedir cancelamento sem justificativa formal', async () => {
@@ -367,6 +439,7 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
           'Guarda de Transição violada: O cancelamento da consulta exige uma justificativa formal',
         );
       });
+<<<<<<< HEAD
     });
   });
 
@@ -514,10 +587,16 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
     describe('Rollback / Cancelamento Parcial', () => {
       it('AÇÕES COMPENSATÓRIAS: deve executar rollback liberando agenda, sala e estornando fila ao cancelar consulta em CHECK_IN', async () => {
         const cancelada = await executarAcaoConsulta.execute(3, {
+=======
+
+      it('deve permitir cancelamento válido com justificativa', async () => {
+        const cancelada = await executarAcaoConsulta.execute(6, {
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
           acao: 'CANCELAR',
           actorId: 1,
           actorRole: 'RECEPCIONISTA',
           payload: {
+<<<<<<< HEAD
             justificativa: 'Paciente precisou ir embora devido a emergência familiar.',
           },
         });
@@ -781,4 +860,81 @@ describe('Clean Architecture, FSM, Concorrência, SLA, Rollback e Audit Log (Hos
       expect(logCancelamento?.detalhes?.compensacoes).toBeDefined();
     });
   });
+=======
+            justificativa: 'Paciente informou imprevisto de trabalho e pediu cancelamento.',
+          },
+        });
+        expect(cancelada.status).toBe('CANCELADA');
+        expect(cancelada.motivoCancelamento).toContain('Paciente informou imprevisto');
+      });
+
+      it('GUARDA DE CANCELAMENTO POR PACIENTE: paciente não pode cancelar consulta após o check-in', async () => {
+        // Consulta #3 está em CHECK_IN
+        await expect(
+          executarAcaoConsulta.execute(3, {
+            acao: 'CANCELAR',
+            actorId: 3,
+            actorRole: 'PACIENTE',
+            payload: {
+              justificativa: 'Desisti de esperar na sala de espera.',
+            },
+          }),
+        ).rejects.toThrow(
+          'O paciente só pode cancelar consultas com status \'AGENDADA\' ou \'CONFIRMADA\'',
+        );
+      });
+    });
+
+    describe('Validação dos Princípios SOLID', () => {
+      it('SRP: Cada guarda deve validar exclusivamente sua responsabilidade', () => {
+        const rbacGuard = new RbacGuard(['MEDICO']);
+        const mockContext = {
+          consulta: new Consulta(1, 1, 1, '2026-09-20', '08:00', 'EM_ATENDIMENTO', '', ''),
+          actorId: 10,
+          actorRole: 'PACIENTE' as const,
+        };
+
+        expect(() => rbacGuard.validate('CONCLUIR', mockContext)).toThrow(ForbiddenError);
+
+        const prontuarioGuard = new ProntuarioObrigatorioGuard();
+        expect(() =>
+          prontuarioGuard.validate('CONCLUIR', {
+            ...mockContext,
+            actorRole: 'MEDICO',
+            payload: { prontuario: '' },
+          }),
+        ).toThrow(BusinessRuleError);
+
+        const justificativaGuard = new JustificativaCancelamentoGuard();
+        expect(() =>
+          justificativaGuard.validate('CANCELAR', {
+            ...mockContext,
+            payload: { justificativa: 'ab' },
+          }),
+        ).toThrow(BusinessRuleError);
+      });
+
+      it('OCP & LSP: Máquina de estados deve expor regras e permitir consulta de ações disponíveis', () => {
+        const regras = ConsultaStateMachine.getRegras();
+        expect(regras.CONFIRMAR).toBeDefined();
+        expect(regras.CHECK_IN).toBeDefined();
+        expect(regras.INICIAR_ATENDIMENTO).toBeDefined();
+        expect(regras.CONCLUIR).toBeDefined();
+        expect(regras.CANCELAR).toBeDefined();
+
+        const acoesParaPacienteEmAgendada = ConsultaStateMachine.getAcoesDisponiveis(
+          'AGENDADA',
+          'PACIENTE',
+        );
+        expect(acoesParaPacienteEmAgendada).toEqual(['CONFIRMAR', 'CANCELAR']);
+
+        const acoesParaMedicoEmAtendimento = ConsultaStateMachine.getAcoesDisponiveis(
+          'EM_ATENDIMENTO',
+          'MEDICO',
+        );
+        expect(acoesParaMedicoEmAtendimento).toEqual(['CONCLUIR', 'CANCELAR']);
+      });
+    });
+  });
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
 });

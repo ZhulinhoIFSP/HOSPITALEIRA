@@ -23,6 +23,7 @@ export class Consulta {
     public prescricao?: string,
     public motivoCancelamento?: string,
     public version: number = 1,
+<<<<<<< HEAD
     public salaId?: number,
     public dataCheckIn?: string,
     public limiteConfirmacaoAt?: string,
@@ -30,6 +31,8 @@ export class Consulta {
     public alertaEscalonamento?: string,
     public prioridade: PrioridadeConsulta = 'NORMAL',
     public compensacoesExecutadas?: string[],
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   ) {}
 
   static readonly TRANSICOES_PERMITIDAS: Record<StatusConsulta, StatusConsulta[]> = {

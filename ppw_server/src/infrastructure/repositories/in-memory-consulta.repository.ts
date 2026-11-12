@@ -71,9 +71,12 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'Paciente compareceu para revisão anual.',
       'Hipertensão estágio 1 controlada.',
       'Losartana 50mg 1x ao dia.',
+<<<<<<< HEAD
       undefined,
       1,
       104,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     ),
     new Consulta(
       5,
@@ -88,6 +91,7 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       undefined,
       undefined,
       'Paciente solicitou cancelamento por motivo de viagem.',
+<<<<<<< HEAD
       1,
       undefined,
       undefined,
@@ -96,6 +100,8 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       undefined,
       'NORMAL',
       ['SLOT_AGENDA_LIBERADO', 'SALA_DESALOCADA'],
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     ),
     new Consulta(
       6,
@@ -122,7 +128,27 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
 
   async findById(id: number): Promise<Consulta | null> {
     const consulta = this.consultas.find((c) => c.id === id);
+<<<<<<< HEAD
     return consulta ? this.clonar(consulta) : null;
+=======
+    return consulta
+      ? new Consulta(
+          consulta.id,
+          consulta.pacienteId,
+          consulta.medicoId,
+          consulta.data,
+          consulta.horario,
+          consulta.status,
+          consulta.createdAt,
+          consulta.updatedAt,
+          consulta.prontuario,
+          consulta.diagnostico,
+          consulta.prescricao,
+          consulta.motivoCancelamento,
+          consulta.version ?? 1,
+        )
+      : null;
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
   }
 
   async findByMedicoEHorario(
@@ -167,6 +193,7 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       undefined,
       undefined,
       1,
+<<<<<<< HEAD
       dados.salaId ?? (100 + (dados.medicoId % 10)),
       undefined,
       dados.limiteConfirmacaoAt,
@@ -174,6 +201,8 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       undefined,
       dados.prioridade ?? 'NORMAL',
       undefined,
+=======
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     );
     this.consultas.push(nova);
     return this.clonar(nova);
@@ -199,6 +228,7 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.diagnostico !== undefined ? dados.diagnostico : atual.diagnostico,
       dados.prescricao !== undefined ? dados.prescricao : atual.prescricao,
       dados.motivoCancelamento !== undefined ? dados.motivoCancelamento : atual.motivoCancelamento,
+<<<<<<< HEAD
       novaVersao,
       dados.salaId !== undefined ? dados.salaId : atual.salaId,
       dados.dataCheckIn !== undefined ? dados.dataCheckIn : atual.dataCheckIn,
@@ -207,6 +237,9 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.alertaEscalonamento !== undefined ? dados.alertaEscalonamento : atual.alertaEscalonamento,
       dados.prioridade !== undefined ? dados.prioridade : atual.prioridade,
       dados.compensacoesExecutadas !== undefined ? dados.compensacoesExecutadas : atual.compensacoesExecutadas,
+=======
+      dados.version !== undefined ? dados.version : (atual.version ?? 1),
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     );
 
     this.consultas[index] = atualizada;
@@ -221,6 +254,7 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
   }
 
   async sincronizar(consultas: Consulta[]): Promise<Consulta[]> {
+<<<<<<< HEAD
     this.consultas = consultas.map((c) => this.clonar(c));
     return this.consultas.map((c) => this.clonar(c));
   }
@@ -256,6 +290,25 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       c.alertaEscalonamento,
       c.prioridade,
       c.compensacoesExecutadas ? [...c.compensacoesExecutadas] : undefined,
+=======
+    this.consultas = consultas.map(
+      (c) =>
+        new Consulta(
+          c.id,
+          c.pacienteId,
+          c.medicoId,
+          c.data,
+          c.horario,
+          c.status,
+          c.createdAt,
+          c.updatedAt,
+          c.prontuario,
+          c.diagnostico,
+          c.prescricao,
+          c.motivoCancelamento,
+          c.version ?? 1,
+        ),
+>>>>>>> 4eaf2c7f60f6385bd2869ceb8c2bc137f6b9b9cf
     );
   }
 }
