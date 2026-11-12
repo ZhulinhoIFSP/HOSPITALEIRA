@@ -25,3 +25,10 @@ export class BusinessRuleError extends DomainError {
     this.name = 'BusinessRuleError';
   }
 }
+
+export class ForbiddenError extends DomainError {
+  constructor(message: string = 'Acesso não autorizado para esta operação.') {
+    super(message);
+    this.name = 'ForbiddenError';
+  }
+}

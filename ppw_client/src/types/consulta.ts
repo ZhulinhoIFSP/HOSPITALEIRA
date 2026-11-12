@@ -2,6 +2,7 @@ export type StatusConsulta =
   | 'AGENDADA'
   | 'CONFIRMADA'
   | 'CHECK_IN'
+  | 'EM_ATENDIMENTO'
   | 'REALIZADA'
   | 'CANCELADA';
 
@@ -14,6 +15,11 @@ export interface Consulta {
   status: StatusConsulta;
   createdAt: string;
   updatedAt: string;
+  prontuario?: string;
+  diagnostico?: string;
+  prescricao?: string;
+  motivoCancelamento?: string;
+  version?: number;
 }
 
 export interface Paciente {

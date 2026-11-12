@@ -9,6 +9,7 @@ import {
   BusinessRuleError,
   ConflictError,
   DomainError,
+  ForbiddenError,
   NotFoundError,
 } from '../../core/errors/domain.error';
 
@@ -22,6 +23,8 @@ export class DomainExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof NotFoundError) {
       status = HttpStatus.NOT_FOUND;
+    } else if (exception instanceof ForbiddenError) {
+      status = HttpStatus.FORBIDDEN;
     } else if (exception instanceof ConflictError) {
       status = HttpStatus.CONFLICT;
     } else if (exception instanceof BusinessRuleError) {

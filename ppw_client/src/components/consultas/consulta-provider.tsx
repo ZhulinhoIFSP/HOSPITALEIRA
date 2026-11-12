@@ -21,6 +21,7 @@ import {
   excluirConsulta as excluirConsultaNaApi,
   excluirMedico as excluirMedicoNaApi,
   excluirPaciente as excluirPacienteNaApi,
+  executarAcaoConsulta as executarAcaoConsultaNaApi,
   sincronizarConsultas,
 } from '@/lib/api';
 import { carregarConsultas, salvarConsultas } from '@/lib/storage';
@@ -138,7 +139,42 @@ export function ConsultaProvider({ children }: { children: ReactNode }) {
   }
 
   async function alterarStatus(id: number, status: StatusConsulta) {
-    const consulta = await atualizarConsultaNaApi(id, { status });
+    let acao: string;
+    let actorRole = 'RECEPCIONISTA';
+    let payload: Record<string, unknown> | undefined = undefined;
+
+    if (status === 'CONFIRMADA') {
+      acao = 'CONFIRMAR';
+      actorRole = 'PACIENTE';
+    } else if (status === 'CHECK_IN') {
+      acao = 'CHECK_IN';
+      actorRole = 'RECEPCIONISTA';
+    } else if (status === 'EM_ATENDIMENTO') {
+      acao = 'INICIAR_ATENDIMENTO';
+      actorRole = 'MEDICO';
+    } else if (status === 'REALIZADA') {
+      acao = 'CONCLUIR';
+      actorRole = 'MEDICO';
+      payload = {
+        prontuario: 'Atendimento clínico concluído pelo médico responsável.',
+        diagnostico: 'Avaliação clínica geral realizada sem queixas agudas.',
+      };
+    } else if (status === 'CANCELADA') {
+      acao = 'CANCELAR';
+      actorRole = 'RECEPCIONISTA';
+      payload = {
+        justificativa: 'Cancelamento solicitado via interface do sistema.',
+      };
+    } else {
+      throw new Error(`Ação não mapeada para o status ${status}`);
+    }
+
+    const consulta = await executarAcaoConsultaNaApi(id, {
+      acao,
+      actorId: 1,
+      actorRole,
+      payload,
+    });
     atualizarConsultasLocalmente(
       consultas.map((item) => (item.id === id ? consulta : item)),
     );

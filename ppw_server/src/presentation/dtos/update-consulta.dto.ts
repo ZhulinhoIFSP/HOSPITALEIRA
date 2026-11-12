@@ -19,8 +19,12 @@ export class UpdateConsultaDto {
   horario?: string;
 
   @IsOptional()
-  @IsIn(['AGENDADA', 'CONFIRMADA', 'CHECK_IN', 'REALIZADA', 'CANCELADA'], {
+  @IsIn(['AGENDADA', 'CONFIRMADA', 'CHECK_IN', 'EM_ATENDIMENTO', 'REALIZADA', 'CANCELADA'], {
     message: 'Status inválido.',
   })
   status?: StatusConsulta;
+
+  @IsOptional()
+  @IsInt({ message: 'A versão para controle de concorrência deve ser um número inteiro.' })
+  version?: number;
 }

@@ -1,4 +1,4 @@
-import { Consulta, StatusConsulta } from '../entities/consulta.entity';
+import { Consulta, PrioridadeConsulta, StatusConsulta } from '../entities/consulta.entity';
 
 export const CONSULTA_REPOSITORY = 'CONSULTA_REPOSITORY';
 
@@ -8,6 +8,9 @@ export interface CreateConsultaData {
   data: string;
   horario: string;
   status?: StatusConsulta;
+  salaId?: number;
+  limiteConfirmacaoAt?: string;
+  prioridade?: PrioridadeConsulta;
 }
 
 export interface IConsultaRepository {

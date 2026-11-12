@@ -17,6 +17,14 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'AGENDADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      101,
+      undefined,
+      '2026-09-19T08:00:00.000Z',
     ),
     new Consulta(
       2,
@@ -27,6 +35,12 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'CONFIRMADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      102,
     ),
     new Consulta(
       3,
@@ -37,6 +51,13 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'CHECK_IN',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      103,
+      '2026-09-21T09:15:00.000Z',
     ),
     new Consulta(
       4,
@@ -47,6 +68,12 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'REALIZADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      'Paciente compareceu para revisão anual.',
+      'Hipertensão estágio 1 controlada.',
+      'Losartana 50mg 1x ao dia.',
+      undefined,
+      1,
+      104,
     ),
     new Consulta(
       5,
@@ -57,6 +84,18 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'CANCELADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      'Paciente solicitou cancelamento por motivo de viagem.',
+      1,
+      undefined,
+      undefined,
+      undefined,
+      false,
+      undefined,
+      'NORMAL',
+      ['SLOT_AGENDA_LIBERADO', 'SALA_DESALOCADA'],
     ),
     new Consulta(
       6,
@@ -67,6 +106,13 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       'AGENDADA',
       '2026-09-01T10:00:00.000Z',
       '2026-09-01T10:00:00.000Z',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      101,
+      '2026-09-22T11:00:00.000Z',
     ),
   ];
 
@@ -76,18 +122,7 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
 
   async findById(id: number): Promise<Consulta | null> {
     const consulta = this.consultas.find((c) => c.id === id);
-    return consulta
-      ? new Consulta(
-          consulta.id,
-          consulta.pacienteId,
-          consulta.medicoId,
-          consulta.data,
-          consulta.horario,
-          consulta.status,
-          consulta.createdAt,
-          consulta.updatedAt,
-        )
-      : null;
+    return consulta ? this.clonar(consulta) : null;
   }
 
   async findByMedicoEHorario(
@@ -104,15 +139,15 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
         c.horario === horario &&
         c.status !== 'CANCELADA',
     );
-    return consulta ?? null;
+    return consulta ? this.clonar(consulta) : null;
   }
 
   async findByPacienteId(pacienteId: number): Promise<Consulta[]> {
-    return this.consultas.filter((c) => c.pacienteId === pacienteId);
+    return this.consultas.filter((c) => c.pacienteId === pacienteId).map((c) => this.clonar(c));
   }
 
   async findByMedicoId(medicoId: number): Promise<Consulta[]> {
-    return this.consultas.filter((c) => c.medicoId === medicoId);
+    return this.consultas.filter((c) => c.medicoId === medicoId).map((c) => this.clonar(c));
   }
 
   async create(dados: CreateConsultaData): Promise<Consulta> {
@@ -127,9 +162,21 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.status ?? 'AGENDADA',
       agora,
       agora,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      1,
+      dados.salaId ?? (100 + (dados.medicoId % 10)),
+      undefined,
+      dados.limiteConfirmacaoAt,
+      false,
+      undefined,
+      dados.prioridade ?? 'NORMAL',
+      undefined,
     );
     this.consultas.push(nova);
-    return nova;
+    return this.clonar(nova);
   }
 
   async update(id: number, dados: Partial<Consulta>): Promise<Consulta | null> {
@@ -137,6 +184,8 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
     if (index === -1) return null;
 
     const atual = this.consultas[index];
+    const novaVersao = dados.version !== undefined ? dados.version : (atual.version ?? 1) + 1;
+
     const atualizada = new Consulta(
       atual.id,
       dados.pacienteId ?? atual.pacienteId,
@@ -146,10 +195,22 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
       dados.status ?? atual.status,
       atual.createdAt,
       dados.updatedAt ?? new Date().toISOString(),
+      dados.prontuario !== undefined ? dados.prontuario : atual.prontuario,
+      dados.diagnostico !== undefined ? dados.diagnostico : atual.diagnostico,
+      dados.prescricao !== undefined ? dados.prescricao : atual.prescricao,
+      dados.motivoCancelamento !== undefined ? dados.motivoCancelamento : atual.motivoCancelamento,
+      novaVersao,
+      dados.salaId !== undefined ? dados.salaId : atual.salaId,
+      dados.dataCheckIn !== undefined ? dados.dataCheckIn : atual.dataCheckIn,
+      dados.limiteConfirmacaoAt !== undefined ? dados.limiteConfirmacaoAt : atual.limiteConfirmacaoAt,
+      dados.slaEstourado !== undefined ? dados.slaEstourado : atual.slaEstourado,
+      dados.alertaEscalonamento !== undefined ? dados.alertaEscalonamento : atual.alertaEscalonamento,
+      dados.prioridade !== undefined ? dados.prioridade : atual.prioridade,
+      dados.compensacoesExecutadas !== undefined ? dados.compensacoesExecutadas : atual.compensacoesExecutadas,
     );
 
     this.consultas[index] = atualizada;
-    return atualizada;
+    return this.clonar(atualizada);
   }
 
   async delete(id: number): Promise<boolean> {
@@ -160,19 +221,41 @@ export class InMemoryConsultaRepository implements IConsultaRepository {
   }
 
   async sincronizar(consultas: Consulta[]): Promise<Consulta[]> {
-    this.consultas = consultas.map(
-      (c) =>
-        new Consulta(
-          c.id,
-          c.pacienteId,
-          c.medicoId,
-          c.data,
-          c.horario,
-          c.status,
-          c.createdAt,
-          c.updatedAt,
-        ),
+    this.consultas = consultas.map((c) => this.clonar(c));
+    return this.consultas.map((c) => this.clonar(c));
+  }
+
+  // Métodos de Snapshot para suporte à Transação ACID
+  getSnapshot(): Consulta[] {
+    return this.consultas.map((c) => this.clonar(c));
+  }
+
+  restoreSnapshot(snapshot: Consulta[]): void {
+    this.consultas = snapshot.map((c) => this.clonar(c));
+  }
+
+  private clonar(c: Consulta): Consulta {
+    return new Consulta(
+      c.id,
+      c.pacienteId,
+      c.medicoId,
+      c.data,
+      c.horario,
+      c.status,
+      c.createdAt,
+      c.updatedAt,
+      c.prontuario,
+      c.diagnostico,
+      c.prescricao,
+      c.motivoCancelamento,
+      c.version,
+      c.salaId,
+      c.dataCheckIn,
+      c.limiteConfirmacaoAt,
+      c.slaEstourado,
+      c.alertaEscalonamento,
+      c.prioridade,
+      c.compensacoesExecutadas ? [...c.compensacoesExecutadas] : undefined,
     );
-    return [...this.consultas];
   }
 }
