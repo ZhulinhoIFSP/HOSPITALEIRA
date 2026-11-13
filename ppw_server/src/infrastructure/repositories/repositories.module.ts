@@ -5,35 +5,55 @@ import { MEDICO_REPOSITORY } from '../../domain/repositories/medico.repository.i
 import { PACIENTE_REPOSITORY } from '../../domain/repositories/paciente.repository.interface';
 import { TRANSACTION_MANAGER } from '../../domain/transaction/transaction-manager.interface';
 import { InMemoryTransactionManager } from '../transaction/in-memory-transaction-manager';
+import { PrismaTransactionManager } from '../transaction/prisma-transaction-manager';
 import { InMemoryConsultaRepository } from './in-memory-consulta.repository';
 import { InMemoryHistoricoConsultaRepository } from './in-memory-historico-consulta.repository';
 import { InMemoryMedicoRepository } from './in-memory-medico.repository';
 import { InMemoryPacienteRepository } from './in-memory-paciente.repository';
+import { PrismaConsultaRepository } from './prisma/prisma-consulta.repository';
+import { PrismaHistoricoConsultaRepository } from './prisma/prisma-historico-consulta.repository';
+import { PrismaMedicoRepository } from './prisma/prisma-medico.repository';
+import { PrismaPacienteRepository } from './prisma/prisma-paciente.repository';
+
+const usePrisma = process.env.USE_PRISMA === 'true';
 
 @Global()
 @Module({
   providers: [
+    // Repositórios em memória
     InMemoryConsultaRepository,
     InMemoryHistoricoConsultaRepository,
+    InMemoryMedicoRepository,
+    InMemoryPacienteRepository,
+    InMemoryTransactionManager,
+
+    // Repositórios Prisma PostgreSQL
+    PrismaConsultaRepository,
+    PrismaHistoricoConsultaRepository,
+    PrismaMedicoRepository,
+    PrismaPacienteRepository,
+    PrismaTransactionManager,
+
+    // Associação dinâmica por Token de Injeção de Dependência
     {
       provide: PACIENTE_REPOSITORY,
-      useClass: InMemoryPacienteRepository,
+      useClass: usePrisma ? PrismaPacienteRepository : InMemoryPacienteRepository,
     },
     {
       provide: MEDICO_REPOSITORY,
-      useClass: InMemoryMedicoRepository,
+      useClass: usePrisma ? PrismaMedicoRepository : InMemoryMedicoRepository,
     },
     {
       provide: CONSULTA_REPOSITORY,
-      useExisting: InMemoryConsultaRepository,
+      useClass: usePrisma ? PrismaConsultaRepository : InMemoryConsultaRepository,
     },
     {
       provide: HISTORICO_CONSULTA_REPOSITORY,
-      useExisting: InMemoryHistoricoConsultaRepository,
+      useClass: usePrisma ? PrismaHistoricoConsultaRepository : InMemoryHistoricoConsultaRepository,
     },
     {
       provide: TRANSACTION_MANAGER,
-      useClass: InMemoryTransactionManager,
+      useClass: usePrisma ? PrismaTransactionManager : InMemoryTransactionManager,
     },
   ],
   exports: [
@@ -42,6 +62,11 @@ import { InMemoryPacienteRepository } from './in-memory-paciente.repository';
     CONSULTA_REPOSITORY,
     HISTORICO_CONSULTA_REPOSITORY,
     TRANSACTION_MANAGER,
+    PrismaConsultaRepository,
+    PrismaHistoricoConsultaRepository,
+    PrismaMedicoRepository,
+    PrismaPacienteRepository,
+    PrismaTransactionManager,
   ],
 })
 export class RepositoriesModule {}
